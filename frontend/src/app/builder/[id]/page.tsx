@@ -13,7 +13,7 @@ import { ResumePreview } from '@/components/builder/resume-preview';
 import { ResumeData, initialResumeData } from '@/lib/types';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Save, Download, LayoutTemplate, Palette, ChevronLeft, ChevronRight, Sparkles, Wand2, Monitor, Smartphone, Maximize2 } from 'lucide-react';
+import { Save, Download, LayoutTemplate, Palette, ChevronLeft, ChevronRight, Sparkles, Wand2, Monitor, Smartphone, Maximize2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   DropdownMenu,

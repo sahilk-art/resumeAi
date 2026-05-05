@@ -52,8 +52,12 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   const deleteResume = async (id: string) => {
     if (confirm('Delete this resume?')) {
@@ -61,6 +65,29 @@ export default function DashboardPage() {
       fetchData();
     }
   };
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground p-8">
+        <Card className="max-w-xl w-full border-border bg-card p-10 text-center">
+          <CardHeader className="space-y-4">
+            <CardTitle className="text-3xl font-black">Login Required</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Please login or register to access your dashboard and upload resumes.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <Link href="/login">
+                <Button className="w-full sm:w-auto">Login</Button>
+              </Link>
+              <Link href="/register">
+                <Button className="w-full sm:w-auto" variant="secondary">Register</Button>
+              </Link>
+            </div>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-background">

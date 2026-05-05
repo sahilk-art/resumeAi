@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Navbar } from '@/components/layout/navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,25 +21,40 @@ export default function AnalyzerPage() {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const resumeTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
+    setUploadedFileName(file.name);
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const { data } = await api.post('/analyzer/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setResumeText(data.text);
-      toast.success('Resume parsed successfully!');
-    } catch (error) {
-      toast.error('Failed to parse PDF');
+      const { data } = await api.post('/analyzer/upload', formData);
+      const extractedText = (data?.text ?? '').toString();
+      setResumeText(extractedText);
+
+      if (!extractedText.trim()) {
+        toast.warning('PDF uploaded, but no text was extracted (try a text-based PDF, not a scanned image).');
+      } else {
+        toast.success(`Resume parsed: ${extractedText.length.toLocaleString()} characters`);
+        // Focus the textarea so the user immediately sees the populated content.
+        setTimeout(() => resumeTextareaRef.current?.focus(), 0);
+      }
+    } catch (error: unknown) {
+      const message =
+        (error as any)?.response?.data?.message ||
+        (error as any)?.message ||
+        'Failed to parse PDF';
+      toast.error(message);
     } finally {
       setUploading(false);
+      // Allow re-uploading the same file (change event won’t fire otherwise).
+      e.target.value = '';
     }
   };
 
@@ -57,8 +72,12 @@ export default function AnalyzerPage() {
       });
       setAnalysis(data);
       toast.success('Deep Analysis complete!');
-    } catch (error) {
-      toast.error('Analysis failed');
+    } catch (error: unknown) {
+      const message =
+        (error as any)?.response?.data?.message ||
+        (error as any)?.message ||
+        'Analysis failed';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -108,6 +127,7 @@ export default function AnalyzerPage() {
                   </div>
                   <Card className="bg-card border-border/50 shadow-2xl rounded-3xl overflow-hidden">
                     <Textarea
+                      ref={resumeTextareaRef}
                       rows={20}
                       placeholder="Paste your resume text here, or upload a PDF above..."
                       value={resumeText}
@@ -115,6 +135,14 @@ export default function AnalyzerPage() {
                       className="bg-transparent border-none p-8 resize-none leading-relaxed text-sm focus-visible:ring-0"
                     />
                   </Card>
+                  <div className="px-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                    <span className="truncate">
+                      {uploadedFileName ? `File: ${uploadedFileName}` : 'No file uploaded yet'}
+                    </span>
+                    <span>
+                      {resumeText.trim() ? `${resumeText.length.toLocaleString()} chars` : '0 chars'}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-6">
@@ -190,7 +218,14 @@ export default function AnalyzerPage() {
                     </p>
                     <div className="mt-8 flex items-center gap-4 border-t border-border/50 pt-6">
                        <div className="flex -space-x-2">
-                          {[1,2,3].map(i => <div key={i} className="w-6 h-6 rounded-full border-2 border-card bg-muted flex items-center justify-center text-[8px] font-black uppercase tracking-widest">{analysis.aiProvider[0]}</div>)}
+                          {[1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className="w-6 h-6 rounded-full border-2 border-card bg-muted flex items-center justify-center text-[8px] font-black uppercase tracking-widest"
+                            >
+                              AI
+                            </div>
+                          ))}
                        </div>
                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Validated by multiple AI models</p>
                     </div>

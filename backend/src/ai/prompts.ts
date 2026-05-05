@@ -1,4 +1,8 @@
-export const ANALYZE_RESUME_PROMPT = (resumeText: string, jobTitle: string, jobDescription: string) => `
+export const ANALYZE_RESUME_PROMPT = (
+  resumeText: string,
+  jobTitle: string,
+  jobDescription: string,
+) => `
 Analyze the following resume for the job title "${jobTitle}" and job description "${jobDescription}".
 Resume Text:
 ${resumeText}
@@ -22,7 +26,10 @@ Return a JSON object with the following structure:
 }
 `;
 
-export const GET_SUGGESTIONS_PROMPT = (resumeText: string, jobTitle: string) => `
+export const GET_SUGGESTIONS_PROMPT = (
+  resumeText: string,
+  jobTitle: string,
+) => `
 Based on the following resume and job title "${jobTitle}", provide specific suggestions to improve the resume.
 Resume: ${resumeText}
 
@@ -77,7 +84,10 @@ Skills: ${data.skills}
 Return JSON: { "summary": string }
 `;
 
-export const SUGGEST_SKILLS_PROMPT = (jobTitle: string, currentSkills: string) => `
+export const SUGGEST_SKILLS_PROMPT = (
+  jobTitle: string,
+  currentSkills: string,
+) => `
 Suggest skills for a "${jobTitle}" role. Current skills: ${currentSkills}
 
 Return JSON: { "suggestedSkills": [string] }

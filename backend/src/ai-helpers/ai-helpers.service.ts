@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AIService } from '../ai/ai.service';
-import { GENERATE_SUMMARY_PROMPT, REWRITE_BULLET_PROMPT, SUGGEST_SKILLS_PROMPT } from '../ai/prompts';
+import {
+  GENERATE_SUMMARY_PROMPT,
+  REWRITE_BULLET_PROMPT,
+  SUGGEST_SKILLS_PROMPT,
+} from '../ai/prompts';
 
 @Injectable()
 export class AIHelpersService {

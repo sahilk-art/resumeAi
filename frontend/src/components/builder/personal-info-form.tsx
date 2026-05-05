@@ -3,7 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ResumeData } from '@/lib/types';
-import { User, Mail, Phone, MapPin, Globe, Linkedin, Github } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Globe, Link, GitBranch } from 'lucide-react';
 
 interface Props {
   data: ResumeData;
@@ -68,14 +68,14 @@ export function PersonalInfoForm({ data, onChange }: Props) {
         <div className="space-y-2">
           <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">LinkedIn</Label>
           <div className="relative group">
-            <Linkedin className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+            <Link className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
             <Input name="linkedin" value={data.personalInfo.linkedin} onChange={handleChange} className="pl-10 h-11 bg-muted/30 border-border" placeholder="linkedin.com/in/..." />
           </div>
         </div>
         <div className="space-y-2">
           <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">GitHub</Label>
           <div className="relative group">
-            <Github className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+            <GitBranch className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
             <Input name="github" value={data.personalInfo.github} onChange={handleChange} className="pl-10 h-11 bg-muted/30 border-border" placeholder="github.com/..." />
           </div>
         </div>

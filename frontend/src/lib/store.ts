@@ -23,11 +23,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 interface AIState {
-  activeProvider: 'gemini' | 'openai' | 'groq';
-  setProvider: (provider: 'gemini' | 'openai' | 'groq') => void;
+  // Provider selection is intentionally controlled server-side via env.
+  // Keep a minimal shape for future expansion without exposing UI controls.
+  activeProvider: 'server';
 }
 
 export const useAIStore = create<AIState>((set) => ({
-  activeProvider: 'gemini',
-  setProvider: (activeProvider) => set({ activeProvider }),
+  activeProvider: 'server',
 }));

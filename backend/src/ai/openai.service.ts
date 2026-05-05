@@ -14,9 +14,9 @@ export class OpenAIService {
 
   async generate(prompt: string): Promise<string> {
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
     });
-    return response.choices[0].message.content;
+    return response.choices[0].message.content ?? '';
   }
 }

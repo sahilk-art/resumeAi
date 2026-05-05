@@ -33,10 +33,11 @@ export class CoverLetterService {
   }
 
   async getHistory(userId: string) {
-    const history = await this.coverLetterModel.find({ userId: new Types.ObjectId(userId) })
+    const history = await this.coverLetterModel
+      .find({ userId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .limit(5);
-    return history.map(h => {
+    return history.map((h) => {
       const obj = h.toObject();
       return { ...obj, id: obj._id };
     });
@@ -45,7 +46,7 @@ export class CoverLetterService {
   async remove(id: string, userId: string) {
     return this.coverLetterModel.deleteOne({
       _id: new Types.ObjectId(id),
-      userId: new Types.ObjectId(userId)
+      userId: new Types.ObjectId(userId),
     });
   }
 }

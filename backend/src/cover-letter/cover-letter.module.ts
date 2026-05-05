@@ -6,7 +6,9 @@ import { CoverLetter, CoverLetterSchema } from '../schemas/app.schemas';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: CoverLetter.name, schema: CoverLetterSchema }])
+    MongooseModule.forFeature([
+      { name: CoverLetter.name, schema: CoverLetterSchema },
+    ]),
   ],
   controllers: [CoverLetterController],
   providers: [CoverLetterService],

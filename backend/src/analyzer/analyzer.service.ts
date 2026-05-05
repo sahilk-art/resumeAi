@@ -47,10 +47,11 @@ export class AnalyzerService {
   }
 
   async getHistory(userId: string) {
-    const history = await this.analysisModel.find({ userId: new Types.ObjectId(userId) })
+    const history = await this.analysisModel
+      .find({ userId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .populate('resumeId', 'title');
-    return history.map(h => {
+    return history.map((h) => {
       const obj = h.toObject();
       return { ...obj, id: obj._id };
     });
@@ -59,7 +60,7 @@ export class AnalyzerService {
   async getOne(id: string, userId: string) {
     const analysis = await this.analysisModel.findOne({
       _id: new Types.ObjectId(id),
-      userId: new Types.ObjectId(userId)
+      userId: new Types.ObjectId(userId),
     });
     if (analysis) {
       const result = analysis.toObject();
