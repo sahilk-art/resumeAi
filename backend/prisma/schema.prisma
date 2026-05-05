@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password      String
+  avatar        String?
+  plan          String    @default("FREE")
+  createdAt     DateTime  @default(now())
+  resumes       Resume[]
+  coverLetters  CoverLetter[]
+  analyses      Analysis[]
+}
+
+model Resume {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  template    String   @default("modern")
+  data        String   // JSON stringified
+  lastScore   Int?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+  analyses    Analysis[]
+}
+
+model Analysis {
+  id           String   @id @default(cuid())
+  resumeId     String
+  userId       String
+  totalScore   Int
+  breakdown    String   // JSON stringified
+  issues       String   // JSON stringified
+  strengths    String   // JSON stringified
+  aiProvider   String
+  jobTitle     String?
+  createdAt    DateTime @default(now())
+  resume       Resume   @relation(fields: [resumeId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model CoverLetter {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  jobTitle  String
+  company   String
+  tone      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
