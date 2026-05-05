@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   email         String    @unique
   name          String
   password      String
@@ -21,8 +21,8 @@ model User {
 }
 
 model Resume {
-  id          String   @id @default(cuid())
-  userId      String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
   title       String
   template    String   @default("modern")
   data        String   // JSON stringified
@@ -35,9 +35,9 @@ model Resume {
 }
 
 model Analysis {
-  id           String   @id @default(cuid())
-  resumeId     String
-  userId       String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  resumeId     String   @db.ObjectId
+  userId       String   @db.ObjectId
   totalScore   Int
   breakdown    String   // JSON stringified
   issues       String   // JSON stringified
@@ -50,8 +50,8 @@ model Analysis {
 }
 
 model CoverLetter {
-  id        String   @id @default(cuid())
-  userId    String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
   content   String
   jobTitle  String
   company   String
