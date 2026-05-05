@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AIService } from '../ai/ai.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Analysis, Resume } from '../schemas/app.schemas';
 import { ANALYZE_RESUME_PROMPT } from '../ai/prompts';
 
 @Injectable()
 export class AnalyzerService {
   constructor(
     private aiService: AIService,
-    private prisma: PrismaService,
+    @InjectModel(Analysis.name) private analysisModel: Model<Analysis>,
+    @InjectModel(Resume.name) private resumeModel: Model<Resume>,
   ) {}
 
   async analyze(userId: string, data: any) {
@@ -15,28 +18,27 @@ export class AnalyzerService {
     const prompt = ANALYZE_RESUME_PROMPT(resumeText, jobTitle, jobDescription);
     const result = await this.aiService.callAI(prompt);
 
-    const analysis = await this.prisma.analysis.create({
-      data: {
-        userId,
-        resumeId: resumeId || '',
-        totalScore: result.totalScore,
-        breakdown: JSON.stringify(result.breakdown),
-        issues: JSON.stringify(result.issues),
-        strengths: JSON.stringify(result.strengths),
-        aiProvider: this.aiService.getProvider(),
-        jobTitle,
-      },
+    const analysis = await this.analysisModel.create({
+      userId: new Types.ObjectId(userId),
+      resumeId: resumeId ? new Types.ObjectId(resumeId) : undefined,
+      totalScore: result.totalScore,
+      breakdown: JSON.stringify(result.breakdown),
+      issues: JSON.stringify(result.issues),
+      strengths: JSON.stringify(result.strengths),
+      aiProvider: this.aiService.getProvider(),
+      jobTitle,
     });
 
     if (resumeId) {
-      await this.prisma.resume.update({
-        where: { id: resumeId },
-        data: { lastScore: result.totalScore },
+      await this.resumeModel.findByIdAndUpdate(resumeId, {
+        lastScore: result.totalScore,
       });
     }
 
+    const obj = analysis.toObject();
     return {
-      ...analysis,
+      ...obj,
+      id: obj._id,
       breakdown: result.breakdown,
       issues: result.issues,
       strengths: result.strengths,
@@ -45,20 +47,25 @@ export class AnalyzerService {
   }
 
   async getHistory(userId: string) {
-    return this.prisma.analysis.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: { resume: { select: { title: true } } },
+    const history = await this.analysisModel.find({ userId: new Types.ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .populate('resumeId', 'title');
+    return history.map(h => {
+      const obj = h.toObject();
+      return { ...obj, id: obj._id };
     });
   }
 
   async getOne(id: string, userId: string) {
-    const analysis = await this.prisma.analysis.findFirst({
-      where: { id, userId },
+    const analysis = await this.analysisModel.findOne({
+      _id: new Types.ObjectId(id),
+      userId: new Types.ObjectId(userId)
     });
     if (analysis) {
+      const result = analysis.toObject();
       return {
-        ...analysis,
+        ...result,
+        id: result._id,
         breakdown: JSON.parse(analysis.breakdown),
         issues: JSON.parse(analysis.issues),
         strengths: JSON.parse(analysis.strengths),
