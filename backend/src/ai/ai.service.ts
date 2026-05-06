@@ -1,4 +1,8 @@
-import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GeminiService } from './gemini.service';
 import { OpenAIService } from './openai.service';
@@ -42,14 +46,14 @@ export class AIService {
 
     for (const provider of providers) {
       try {
-        const response = await this.executeCall(provider, prompt);
+        const response = await this.executeCallWithRetry(provider, prompt);
         const parsed = this.parseJSON(response);
         // Record which provider actually succeeded so UI/history can reflect it.
         this.lastUsedProvider = provider;
         this.activeProvider = provider;
         return parsed;
       } catch (error) {
-        const message = (error as any)?.message ?? String(error);
+        const message = error?.message ?? String(error);
         this.logger.error(`Error with provider ${provider}: ${message}`);
         if (!retry) throw error;
       }
@@ -95,6 +99,49 @@ export class AIService {
     if (lower.includes('your-groq-api-key')) return false;
     if (lower.includes('your-gemini-api-key')) return false;
     return true;
+  }
+
+  private async executeCallWithRetry(
+    provider: string,
+    prompt: string,
+    maxRetries = 3,
+  ): Promise<string> {
+    let lastError: any;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.executeCall(provider, prompt);
+      } catch (error) {
+        lastError = error;
+        const message = error?.message ?? String(error);
+
+        // Check if it's a rate limit error (429)
+        if (
+          message.includes('429') ||
+          message.includes('Too Many Requests') ||
+          message.includes('quota')
+        ) {
+          if (attempt < maxRetries) {
+            // Exponential backoff: 1s, 2s, 4s, etc.
+            const delay = Math.pow(2, attempt) * 1000;
+            this.logger.warn(
+              `Rate limit hit for ${provider}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})`,
+            );
+            await this.sleep(delay);
+            continue;
+          }
+        }
+
+        // For non-rate-limit errors, don't retry
+        throw error;
+      }
+    }
+
+    throw lastError;
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private async executeCall(provider: string, prompt: string): Promise<string> {

@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Navbar } from '@/components/layout/navbar';
+import { AppShell } from '@/components/layout/app-shell';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PersonalInfoForm } from '@/components/builder/personal-info-form';
 import { SummaryForm } from '@/components/builder/summary-form';
@@ -13,7 +13,7 @@ import { ResumePreview } from '@/components/builder/resume-preview';
 import { ResumeData, initialResumeData } from '@/lib/types';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Save, Download, LayoutTemplate, Palette, ChevronLeft, ChevronRight, Sparkles, Wand2, Monitor, Smartphone, Maximize2, Plus } from 'lucide-react';
+import { Download, LayoutTemplate, ChevronLeft, ChevronRight, Sparkles, Wand2, Monitor, Smartphone, Maximize2, Plus, FileText, Palette, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   DropdownMenu,
@@ -53,6 +53,7 @@ export default function BuilderPage() {
   const [activeStep, setActiveStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [previewZoom, setPreviewZoom] = useState(0.85);
+  const [mobilePane, setMobilePane] = useState<'form' | 'preview'>('form');
 
   useEffect(() => {
     if (id && id !== 'new') {
@@ -92,12 +93,31 @@ export default function BuilderPage() {
   const prevStep = () => activeStep > 0 && setActiveStep(activeStep - 1);
 
   return (
-    <div className="flex h-screen bg-[#050508] overflow-hidden text-foreground">
-      <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
-        {/* Builder Header */}
-        <header className="h-16 border-b border-border/40 bg-card/30 backdrop-blur-xl flex items-center justify-between px-8 z-30">
+    <AppShell
+      contentClassName="flex-1 flex flex-col overflow-hidden bg-[#050508]"
+      header={({ openMenu }) => (
+        <header className="h-16 border-b border-border/40 bg-card/30 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6 lg:px-8 z-30">
           <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={openMenu}
+              className="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-xl border border-border/50 bg-card/30 hover:bg-card/60 transition-colors"
+              aria-label="Open menu"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-foreground"
+              >
+                <path
+                  d="M4 7H20M4 12H20M4 17H20"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
             <Link href="/dashboard">
               <Button variant="ghost" size="sm" className="rounded-full h-8 w-8 p-0 hover:bg-muted">
                 <ChevronLeft className="w-5 h-5" />
@@ -112,7 +132,27 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+             <div className="lg:hidden flex items-center gap-2">
+               <Button
+                 type="button"
+                 size="sm"
+                 variant={mobilePane === 'form' ? 'secondary' : 'outline'}
+                 className="rounded-xl border-border/50 font-bold h-9 gap-2"
+                 onClick={() => setMobilePane('form')}
+               >
+                 <FileText className="w-4 h-4" /> Form
+               </Button>
+               <Button
+                 type="button"
+                 size="sm"
+                 variant={mobilePane === 'preview' ? 'secondary' : 'outline'}
+                 className="rounded-xl border-border/50 font-bold h-9 gap-2"
+                 onClick={() => setMobilePane('preview')}
+               >
+                 <Monitor className="w-4 h-4" /> Preview
+               </Button>
+             </div>
              <Button variant="outline" size="sm" onClick={() => handleSave()} className="rounded-xl border-border/50 font-bold h-9">
                Save Draft
              </Button>
@@ -121,10 +161,17 @@ export default function BuilderPage() {
              </Button>
           </div>
         </header>
+      )}
+    >
 
         <div className="flex-1 flex overflow-hidden">
           {/* Left Side: Dynamic Form */}
-          <div className="w-[450px] border-r border-border/30 flex flex-col bg-card/20 relative z-20 shadow-2xl">
+          <div
+            className={cn(
+              "w-full lg:w-[450px] lg:border-r border-border/30 flex flex-col bg-card/20 relative z-20 shadow-2xl",
+              mobilePane === 'form' ? "flex" : "hidden lg:flex"
+            )}
+          >
              {/* Progress Stepper */}
              <div className="p-6 border-b border-border/20 flex justify-between gap-1">
                 {steps.map((step, idx) => (
@@ -184,7 +231,12 @@ export default function BuilderPage() {
           </div>
 
           {/* Right Side: Visual Preview */}
-          <div className="flex-1 bg-[#0a0a0f] p-12 flex flex-col items-center overflow-auto scrollbar-hide relative group/preview">
+          <div
+            className={cn(
+              "flex-1 bg-[#0a0a0f] p-4 sm:p-6 lg:p-12 flex flex-col items-center overflow-auto scrollbar-hide relative group/preview",
+              mobilePane === 'preview' ? "flex" : "hidden lg:flex"
+            )}
+          >
              {/* Preview Controls */}
              <div className="mb-10 flex items-center gap-6 glass p-2 rounded-2xl border-white/5 shadow-2xl sticky top-0 z-30 opacity-60 hover:opacity-100 transition-opacity">
                 <div className="flex items-center gap-2 px-4">
@@ -245,10 +297,7 @@ export default function BuilderPage() {
                 </Button>
              </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
+	        </div>
+    </AppShell>
+	  );
 }
-
-import Link from 'next/link';

@@ -1,8 +1,7 @@
 "use client"
 
 import { useRef, useState } from 'react';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Navbar } from '@/components/layout/navbar';
+import { AppShell } from '@/components/layout/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -84,18 +83,16 @@ export default function AnalyzerPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
-        <Navbar />
-        <main className="p-10 max-w-7xl mx-auto w-full space-y-10">
-          <div className="flex justify-between items-center">
+    <AppShell>
+      <main className="app-container p-4 sm:p-6 xl:p-10 space-y-8">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6 rounded-lg border border-border/70 bg-card/65 p-6 sm:p-8 shadow-2xl shadow-black/20">
             <div className="space-y-1">
-              <h1 className="text-4xl font-black italic tracking-tight">Resume Scanner</h1>
-              <p className="text-muted-foreground text-sm font-medium uppercase tracking-[3px] opacity-70">Deep ATS & Content Analysis</p>
+              <p className="text-xs font-black uppercase tracking-[0.28em] text-primary">Analyzer</p>
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight">Resume Scanner</h1>
+              <p className="max-w-2xl text-muted-foreground text-sm sm:text-base">Scan the resume against a target role, extract gaps, and turn the result into actionable fixes.</p>
             </div>
             {analysis && (
-              <Button variant="outline" onClick={() => setAnalysis(null)} className="rounded-xl border-border/50 font-bold">
+              <Button variant="outline" onClick={() => setAnalysis(null)} className="rounded-lg border-border/70 font-bold h-11 px-5">
                  Scan Another
               </Button>
             )}
@@ -107,7 +104,7 @@ export default function AnalyzerPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-10"
+                className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-6"
               >
                 <div className="space-y-6">
                   <div className="flex items-center justify-between px-1">
@@ -125,14 +122,14 @@ export default function AnalyzerPage() {
                        </label>
                     </div>
                   </div>
-                  <Card className="bg-card border-border/50 shadow-2xl rounded-3xl overflow-hidden">
+                  <Card className="bg-card/80 border-border/70 shadow-2xl rounded-lg overflow-hidden">
                     <Textarea
                       ref={resumeTextareaRef}
                       rows={20}
                       placeholder="Paste your resume text here, or upload a PDF above..."
                       value={resumeText}
                       onChange={(e) => setResumeText(e.target.value)}
-                      className="bg-transparent border-none p-8 resize-none leading-relaxed text-sm focus-visible:ring-0"
+                      className="min-h-[470px] bg-transparent border-none p-6 sm:p-8 resize-none leading-relaxed text-sm focus-visible:ring-0"
                     />
                   </Card>
                   <div className="px-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
@@ -147,14 +144,14 @@ export default function AnalyzerPage() {
 
                 <div className="space-y-6">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 px-1">2. Target Role Details</Label>
-                  <Card className="bg-card border-border/50 shadow-2xl rounded-3xl p-8 space-y-8">
+                  <Card className="bg-card/80 border-border/70 shadow-2xl rounded-lg p-6 sm:p-8 space-y-7">
                     <div className="space-y-2">
                       <Label className="font-bold ml-1">Target Job Title</Label>
                       <Input
                         placeholder="e.g. Senior Product Manager"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
-                        className="h-12 bg-muted/30 border-border rounded-xl"
+                        className="h-12 bg-muted/70 border-border rounded-lg"
                       />
                     </div>
                     <div className="space-y-2">
@@ -164,10 +161,10 @@ export default function AnalyzerPage() {
                         placeholder="Paste the target JD here for a more precise match..."
                         value={jobDescription}
                         onChange={(e) => setJobDescription(e.target.value)}
-                        className="bg-muted/30 border-border rounded-xl resize-none p-4"
+                        className="min-h-[250px] bg-muted/70 border-border rounded-lg resize-none p-4"
                       />
                     </div>
-                    <Button onClick={handleAnalyze} disabled={loading} className="w-full h-14 grad-primary border-none shadow-2xl shadow-primary/20 text-lg font-black uppercase tracking-widest rounded-2xl gap-3 active:scale-[0.98] transition-all">
+                    <Button onClick={handleAnalyze} disabled={loading} className="w-full h-14 grad-primary border-none shadow-2xl shadow-primary/20 text-base font-black uppercase tracking-[0.16em] rounded-lg gap-3 active:scale-[0.98] transition-all">
                       {loading ? (
                         <>
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -186,13 +183,13 @@ export default function AnalyzerPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="space-y-10"
               >
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                  <Card className="bg-card border-border/50 lg:col-span-1 shadow-2xl rounded-3xl flex flex-col items-center justify-center p-12 relative overflow-hidden group">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="bg-card/80 border-border/70 lg:col-span-1 shadow-2xl rounded-lg flex flex-col items-center justify-center p-12 relative overflow-hidden group">
                     <div className="absolute inset-0 grad-primary opacity-[0.03] group-hover:opacity-[0.07] transition-opacity" />
                     <div className="relative z-10 text-center">
                        <p className="text-[10px] font-black uppercase tracking-[4px] text-muted-foreground mb-4">ATS Compatibility</p>
                        <div className={cn(
-                          "text-9xl font-black tracking-tighter mb-4",
+                          "text-8xl sm:text-9xl font-black tracking-tight mb-4",
                           resultColor(analysis.totalScore)
                        )}>
                           {analysis.totalScore}
@@ -206,7 +203,7 @@ export default function AnalyzerPage() {
                     </div>
                   </Card>
 
-                  <Card className="bg-card border-border/50 lg:col-span-2 shadow-2xl rounded-3xl p-10 flex flex-col justify-center border-l-4 border-l-primary">
+                  <Card className="bg-card/80 border-border/70 lg:col-span-2 shadow-2xl rounded-lg p-8 sm:p-10 flex flex-col justify-center border-l-4 border-l-primary">
                     <div className="flex items-center gap-3 mb-6">
                        <div className="w-10 h-10 rounded-xl grad-primary flex items-center justify-center shadow-lg shadow-primary/20">
                           <Sparkles className="w-5 h-5 text-white" />
@@ -232,7 +229,7 @@ export default function AnalyzerPage() {
                   </Card>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="space-y-6">
                     <h3 className="text-xl font-black flex items-center gap-3 px-2">
                        <AlertCircle className="w-5 h-5 text-destructive" /> Critical Issues
@@ -278,9 +275,8 @@ export default function AnalyzerPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </main>
-      </div>
-    </div>
+      </main>
+    </AppShell>
   );
 }
 

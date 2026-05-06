@@ -1,22 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 @Injectable()
 export class GeminiService {
-  private genAI: GoogleGenerativeAI;
+  private ai: GoogleGenAI;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
-    this.genAI = new GoogleGenerativeAI(apiKey || 'dummy');
+
+    this.ai = new GoogleGenAI({
+      apiKey: apiKey || '',
+    });
   }
 
   async generate(prompt: string): Promise<string> {
-    const modelName =
-      this.configService.get<string>('GEMINI_MODEL') || 'gemini-1.5-flash';
-    const model = this.genAI.getGenerativeModel({ model: modelName });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    try {
+      const modelName =
+        this.configService.get<string>('GEMINI_MODEL') || 'gemini-2.0-flash';
+
+      const response = await this.ai.models.generateContent({
+        model: modelName,
+        contents: prompt,
+      });
+
+      console.log('Gemini response:', response.text);
+
+      return response.text || 'No response';
+    } catch (error) {
+      console.error('Gemini generate error:', error);
+      throw error;
+    }
   }
 }

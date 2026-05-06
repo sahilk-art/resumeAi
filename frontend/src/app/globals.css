@@ -8,9 +8,9 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  --color-background: #0a0a0f;
+  --color-background: #07080d;
   --color-foreground: #f8fafc;
-  --color-card: #11111a;
+  --color-card: #12141f;
   --color-card-foreground: #f8fafc;
   --color-popover: #0f172a;
   --color-popover-foreground: #f8fafc;
@@ -18,14 +18,14 @@
   --color-primary-foreground: #ffffff;
   --color-secondary: #ec4899;
   --color-secondary-foreground: #ffffff;
-  --color-muted: #1e293b;
+  --color-muted: #1b2433;
   --color-muted-foreground: #94a3b8;
   --color-accent: #10b981;
   --color-accent-foreground: #0a0a0f;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #1e293b;
-  --color-input: #1e293b;
+  --color-border: #252d3d;
+  --color-input: #1b2433;
   --color-ring: #8b5cf6;
   --radius-lg: 1rem;
   --radius-md: 0.75rem;
@@ -38,9 +38,9 @@
   --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
 
-  --background: #0a0a0f;
+  --background: #07080d;
   --foreground: #f8fafc;
-  --card: #11111a;
+  --card: #12141f;
   --card-foreground: #f8fafc;
   --popover: #0f172a;
   --popover-foreground: #f8fafc;
@@ -48,14 +48,14 @@
   --primary-foreground: #ffffff;
   --secondary: #ec4899;
   --secondary-foreground: #ffffff;
-  --muted: #1e293b;
+  --muted: #1b2433;
   --muted-foreground: #94a3b8;
   --accent: #10b981;
   --accent-foreground: #0a0a0f;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #1e293b;
-  --input: #1e293b;
+  --border: #252d3d;
+  --input: #1b2433;
   --ring: #8b5cf6;
 }
 
@@ -65,6 +65,11 @@
   }
   body {
     background-color: var(--background);
+    background-image:
+      linear-gradient(rgba(139, 92, 246, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.025) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 240px);
+    background-size: 44px 44px, 44px 44px, 100% 100%;
     color: var(--foreground);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
@@ -82,4 +87,10 @@
 
 .resume-shadow {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.app-container {
+  width: 100%;
+  max-width: 1520px;
+  margin-inline: auto;
 }
